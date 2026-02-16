@@ -474,6 +474,84 @@
     `;
     document.head.appendChild(style);
 
+    /* ===============================
+       ✅ NEW: EXTENSION FALLBACK HELPERS
+       - image: .jpg <-> .JPG
+       - video: .mp4 <-> .MP4
+    ================================ */
+
+    function buildCandidates(path, lowerExt, upperExt){
+      // If path already contains ext, swap it.
+      // Example: photo1.jpg -> [photo1.jpg, photo1.JPG]
+      // Example: video6.MP4 -> [video6.MP4, video6.mp4]
+      const lower = lowerExt.startsWith(".") ? lowerExt : "." + lowerExt;
+      const upper = upperExt.startsWith(".") ? upperExt : "." + upperExt;
+
+      const p = String(path || "");
+      const lowerRe = new RegExp(lower.replace(".", "\\.") + "$", "i"); // case-insensitive end match
+
+      // Strip existing extension (any case) then append both.
+      const base = p.replace(lowerRe, "");
+      // If it didn't end with that ext, keep original as first candidate and also try swapped case.
+      const endsWith = p.toLowerCase().endsWith(lower.toLowerCase());
+
+      if (endsWith){
+        return [base + lower, base + upper];
+      }
+      // If path doesn't end with the expected ext, still try original + toggled-case version
+      // (useful for safety).
+      // For example: "photo1.JPG" passed in -> will still give both.
+      const upperRe = new RegExp(upper.replace(".", "\\.") + "$", "i");
+      const base2 = p.replace(upperRe, "");
+      const endsWithUpper = p.toLowerCase().endsWith(upper.toLowerCase());
+      if (endsWithUpper){
+        return [base2 + upper, base2 + lower];
+      }
+      return [p, p]; // fallback (shouldn't happen in your file names)
+    }
+
+    function setImgWithFallback(imgEl, firstPath){
+      const list = buildCandidates(firstPath, ".jpg", ".JPG");
+      let i = 0;
+
+      const tryNext = () => {
+        if (i >= list.length) return;
+        imgEl.src = list[i++];
+      };
+
+      imgEl.onerror = () => {
+        // try the other extension
+        tryNext();
+      };
+
+      // start
+      tryNext();
+    }
+
+    function setVideoWithFallback(videoEl, firstPath){
+      const list = buildCandidates(firstPath, ".mp4", ".MP4");
+      let i = 0;
+
+      // Use <source> so changing src works properly
+      const src = document.createElement("source");
+      src.type = "video/mp4";
+      videoEl.appendChild(src);
+
+      const tryNext = () => {
+        if (i >= list.length) return;
+        src.src = list[i++];
+        videoEl.load();
+        videoEl.play().catch(()=>{});
+      };
+
+      // Some browsers trigger error on video element, some on source
+      videoEl.onerror = () => tryNext();
+      src.onerror = () => tryNext();
+
+      // start
+      tryNext();
+    }
+
     // Video slide numbers (slide 9 is PHOTO)
     const videoSlides = new Set([6,7,10,12,15,17,18,20,21,24,27,29,31,38,39,40,42,53,54,59,60,61]);
 
@@ -614,9 +692,11 @@
       if (s.type === "image") {
         const img = document.createElement("img");
         img.className = "media";
-        img.src = s.file;
         img.alt = "";
         page.appendChild(img);
+
+        // ✅ Use fallback (.jpg/.JPG)
+        setImgWithFallback(img, s.file);
 
         const cap = document.createElement("div");
         cap.className = "caption";
@@ -634,10 +714,9 @@
         vid.playsInline = true;
         vid.controls = true;
 
-        const src = document.createElement("source");
-        src.src = s.file;
-        src.type = "video/mp4";
-        vid.appendChild(src);
+        // ✅ Use fallback (.mp4/.MP4)
+        setVideoWithFallback(vid, s.file);
+
         page.appendChild(vid);
 
         const cap = document.createElement("div");
@@ -895,23 +974,13 @@
     });
   </script>
 
-  <!-- FILES:
-    love.mp3
+  <!--
+    ✅ Now your media can be either lowercase OR uppercase:
 
-    VIDEOS (numbered): video6.mp4 video7.mp4 video10.mp4 video12.mp4 video15.mp4 video17.mp4 video18.mp4
-                      video20.mp4 video21.mp4 video24.mp4 video27.mp4 video29.mp4 video31.mp4
-                      video38.mp4 video39.mp4 video40.mp4 video42.mp4
-                      video53.mp4 video54.mp4 video59.mp4 video60.mp4 video61.mp4
-
-    PHOTOS (numbered): photo{n}.jpg for all other non-text, non-video slides (including slide 9 as photo9.jpg)
-
-    TEXT slides (no file): 22,23,25,26,28,32,44,62,65,67
-
-    EXTRA (non-numbered):
-      extra_beach_before18.jpg
-      extra_rain_after13.mp4
-      extra_edit_after39.jpg
-      extra_final_destination_after53.jpg
+    photo1.jpg  OR photo1.JPG
+    video6.mp4  OR video6.MP4
+    extra_edit_after39.jpg OR extra_edit_after39.JPG
+    extra_rain_after13.mp4 OR extra_rain_after13.MP4
   -->
 </body>
 </html>
