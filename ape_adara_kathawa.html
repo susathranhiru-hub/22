@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>අපේ ආදර කතාව ❤️</title>
+
+  <style>
+    :root{
+      --pink:#ff4e8d;
+      --pink2:#ff7ab5;
+      --deep:#d63384;
+      --ink:#2b2b2b;
+      --glass: rgba(255,255,255,0.55);
+      --glass2: rgba(255,255,255,0.75);
+      --ok:#16a34a;
+      --bad:#dc2626;
+    }
+
+    body{
+      margin:0;
+      font-family: "Georgia", serif;
+      overflow:hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255,120,170,0.20), transparent 55%),
+        radial-gradient(circle at 82% 28%, rgba(255,200,230,0.35), transparent 55%),
+        radial-gradient(circle at 30% 85%, rgba(255,120,170,0.18), transparent 55%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.25) 0 10px, rgba(255,255,255,0.10) 10px 20px),
+        linear-gradient(135deg, #ffe6f0, #fff3fa);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 140% 140%, 100% 100%;
+      animation: bgDrift 14s ease-in-out infinite;
+    }
+    @keyframes bgDrift{
+      0%{ background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
+      50%{ background-position: 10% 5%, -8% 6%, 6% -10%, 10% 10%, 0% 0%; }
+      100%{ background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
+    }
+
+    .heart{
+      position:fixed;
+      bottom:-20px;
+      opacity:0.6;
+      animation: floatUp linear infinite;
+      pointer-events:none;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.08));
+      z-index:1;
+    }
+    @keyframes floatUp{
+      from{ transform: translateY(0) scale(1); opacity:0.95; }
+      to{ transform: translateY(-110vh) scale(1.25); opacity:0; }
+    }
+
+    .sparkle{
+      position:fixed;
+      width:8px; height:8px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.9);
+      opacity:0.0;
+      pointer-events:none;
+      filter: blur(0.2px);
+      z-index:2;
+    }
+    .sparkle.pop{ animation: sparklePop 900ms ease forwards; }
+    @keyframes sparklePop{
+      0%{ transform: translate(0,0) scale(0.2); opacity:0; }
+      20%{ opacity:1; }
+      100%{ transform: translate(var(--dx), var(--dy)) scale(1.4); opacity:0; }
+    }
+
+    .container{
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      text-align:center;
+      padding:20px;
+      box-sizing:border-box;
+      color: var(--deep);
+      position:relative;
+      z-index:3;
+    }
+
+    h1{
+      margin:0 0 12px 0;
+      font-size: 42px;
+      animation: titleFloat 2.6s ease-in-out infinite;
+      text-shadow: 0 10px 30px rgba(214,51,132,0.18);
+    }
+    @keyframes titleFloat{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-6px); }
+    }
+
+    .sub{
+      margin:0 0 16px 0;
+      font-size:18px;
+      opacity:0.9;
+    }
+
+    button{
+      padding:12px 26px;
+      border:none;
+      border-radius:30px;
+      cursor:pointer;
+      font-size:18px;
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      color:white;
+      transition: transform .2s ease, filter .2s ease;
+      box-shadow: 0 16px 38px rgba(255,78,141,0.25);
+      position:relative;
+      overflow:hidden;
+    }
+    button::after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: radial-gradient(circle, rgba(255,255,255,0.55), transparent 55%);
+      transform: translateX(-120%);
+      transition: transform 0.45s ease;
+      pointer-events:none;
+    }
+    button:hover{ transform: scale(1.08); }
+    button:hover::after{ transform: translateX(120%); }
+    button:active{ transform: scale(1.02); }
+
+    .hidden{ display:none !important; }
+
+    .music-btn{
+      position:fixed;
+      top:18px;
+      right:18px;
+      z-index:999;
+      width:50px;
+      height:50px;
+      border-radius:999px;
+      font-size:18px;
+      padding:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    }
+
+    .book-wrap{ width: min(940px, 92vw); }
+    .book{
+      height: 630px;
+      border-radius:24px;
+      position:relative;
+      overflow:hidden;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.60);
+    }
+
+    .page{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      padding:24px;
+      box-sizing:border-box;
+      opacity:0;
+      transform: translateX(70px) scale(0.98);
+      pointer-events:none;
+    }
+    .page.active{
+      opacity:1;
+      transform: translateX(0) scale(1);
+      pointer-events:auto;
+      animation: pageIn 700ms cubic-bezier(.2,.95,.2,1) forwards;
+    }
+    @keyframes pageIn{
+      from{ opacity:0; transform: translateX(90px) scale(0.965) rotate(0.5deg); filter: blur(2px); }
+      to{ opacity:1; transform: translateX(0) scale(1) rotate(0deg); filter: blur(0px); }
+    }
+    .page.exit-left{ opacity:1; animation: pageOutLeft 520ms ease forwards; }
+    @keyframes pageOutLeft{
+      from{ opacity:1; transform: translateX(0) scale(1); filter: blur(0px); }
+      to{ opacity:0; transform: translateX(-95px) scale(0.985); filter: blur(2px); }
+    }
+    .page.exit-right{ opacity:1; animation: pageOutRight 520ms ease forwards; }
+    @keyframes pageOutRight{
+      from{ opacity:1; transform: translateX(0) scale(1); filter: blur(0px); }
+      to{ opacity:0; transform: translateX(95px) scale(0.985); filter: blur(2px); }
+    }
+
+    .media{
+      max-width: 92%;
+      max-height: 445px;
+      width:auto;
+      height:auto;
+      object-fit: contain;
+      border-radius:20px;
+      transform: scale(1.05);
+      transition: transform 900ms ease;
+      box-shadow: 0 26px 55px rgba(0,0,0,0.16);
+      background: rgba(255,255,255,0.22);
+    }
+    .page.active .media{ transform: scale(1.10); }
+
+    .caption{
+      margin-top:16px;
+      font-size:20px;
+      color: #2f2f2f;
+      text-align:center;
+      max-width: 92%;
+      line-height: 1.35;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.65);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+    }
+
+    .text-slide{
+      width: 92%;
+      max-width: 820px;
+      padding: 34px 28px;
+      border-radius: 20px;
+      background: var(--glass2);
+      border: 1px solid rgba(255,255,255,0.72);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+      color:#2b2b2b;
+      position:relative;
+      overflow:hidden;
+    }
+    .text-slide::before{
+      content:"";
+      position:absolute;
+      inset:-30%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,78,141,0.18), transparent 60%),
+        radial-gradient(circle at 70% 70%, rgba(255,122,181,0.16), transparent 60%);
+      transform: rotate(12deg);
+      pointer-events:none;
+    }
+    .text-slide .big{
+      position:relative;
+      font-size: 26px;
+      line-height: 1.65;
+      white-space: pre-line;
+      animation: softPulse 2.8s ease-in-out infinite;
+    }
+    @keyframes softPulse{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-2px); }
+    }
+
+    .quiz{
+      width: 92%;
+      max-width: 780px;
+      padding: 28px 26px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(255,255,255,0.80);
+      box-shadow: 0 26px 70px rgba(0,0,0,0.14);
+      color:#2b2b2b;
+      text-align:left;
+      position:relative;
+      overflow:hidden;
+    }
+    .quiz::before{
+      content:"";
+      position:absolute;
+      inset:-30%;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(255,78,141,0.20), transparent 60%),
+        radial-gradient(circle at 78% 45%, rgba(255,122,181,0.16), transparent 60%),
+        radial-gradient(circle at 50% 85%, rgba(255,200,230,0.22), transparent 62%);
+      transform: rotate(-10deg);
+      pointer-events:none;
+    }
+    .quiz-inner{ position:relative; }
+    .lockRow{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px; }
+    .lockIcon{
+      width:44px;height:44px;
+      border-radius:999px;
+      background: linear-gradient(135deg, rgba(255,78,141,0.95), rgba(255,122,181,0.95));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 18px 40px rgba(255,78,141,0.25);
+      transform-origin:center;
+      animation: lockWiggle 2.2s ease-in-out infinite;
+      color:white;
+      font-size:20px;
+    }
+    @keyframes lockWiggle{
+      0%,100%{ transform: rotate(0deg); }
+      50%{ transform: rotate(3deg); }
+    }
+    .quiz h2{ margin:0 0 6px 0; color: var(--deep); font-size: 26px; text-align:center; }
+    .quiz p{ margin: 0 0 16px 0; text-align:center; opacity:0.85; }
+    .q{ margin: 14px 0; }
+    .q label{ display:block; font-weight:700; margin-bottom:6px; }
+    .q input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(0,0,0,0.10);
+      font-size:16px;
+      outline:none;
+      background: rgba(255,255,255,0.85);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .q input:focus{
+      border-color: rgba(255,78,141,0.55);
+      box-shadow: 0 12px 28px rgba(255,78,141,0.18);
+      transform: translateY(-1px);
+    }
+    .shake{
+      animation: shake 520ms ease;
+      border-color: rgba(220,38,38,0.55) !important;
+      box-shadow: 0 12px 28px rgba(220,38,38,0.12) !important;
+    }
+    @keyframes shake{
+      0%,100%{ transform: translateX(0); }
+      20%{ transform: translateX(-8px); }
+      40%{ transform: translateX(8px); }
+      60%{ transform: translateX(-6px); }
+      80%{ transform: translateX(6px); }
+    }
+    .quiz-actions{ display:flex; gap:12px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+    .hint{ margin-top:10px; text-align:center; font-size:14px; opacity:0.75; }
+    .result{
+      margin-top:12px;
+      text-align:center;
+      font-weight:800;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(255,255,255,0.75);
+    }
+    .result.ok{ color: var(--ok); animation: pop 520ms ease; }
+    .result.bad{ color: var(--bad); animation: pop 520ms ease; }
+    @keyframes pop{
+      0%{ transform: scale(0.98); opacity:0.4; }
+      100%{ transform: scale(1); opacity:1; }
+    }
+
+    .confetti{
+      position:fixed;
+      top:-20px;
+      font-size:18px;
+      animation: confettiFall linear forwards;
+      pointer-events:none;
+      z-index:1000;
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,0.12));
+    }
+    @keyframes confettiFall{
+      from{ transform: translateY(-20px) rotate(0deg); opacity:1; }
+      to{ transform: translateY(110vh) rotate(360deg); opacity:0.95; }
+    }
+
+    .nav{
+      margin-top:18px;
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .small{ font-size:14px; opacity:0.78; margin-top:10px; }
+    .progress{ margin-top:10px; font-size: 13px; opacity: 0.80; color: #333; }
+  </style>
+</head>
+
+<body>
+  <audio id="bgMusic" loop>
+    <source src="love.mp3" type="audio/mpeg">
+  </audio>
+
+  <button class="music-btn" id="musicBtn">🎵</button>
+
+  <div class="container" id="valentine">
+    <h1>Baby, will you be my Valentine? 💖</h1>
+    <p class="sub">ඔය “Yes” දුන්නම තමයි surprise එක 😏</p>
+    <div>
+      <button id="btnYes">Yes ❤️</button>
+      <button id="btnNo">No 😢</button>
+    </div>
+  </div>
+
+  <div class="container hidden" id="noBox">
+    <h1>Please honey 🥺</h1>
+    <p class="sub">මට ඔයා විතරයිනේ ඉන්නේ🥺...…</p>
+    <button id="btnPlease">Okay fine ❤️</button>
+  </div>
+
+  <div class="container hidden" id="surprise">
+    <h1>I love you so much honey ❤️</h1>
+    <p class="sub">Box එකට click කරලා “අපේ කතාව” බලන්න 😚</p>
+    <button id="btnOpenBook">Click here for the surprise honey 💌</button>
+  </div>
+
+  <div class="container hidden" id="bookSection">
+    <div class="book-wrap">
+      <div class="book" id="book"></div>
+
+      <div class="nav">
+        <button id="btnPrev">Previous</button>
+        <button id="btnNext">Next</button>
+      </div>
+      <div class="progress" id="progress"></div>
+      <div class="small">Tip: Keyboard → Left / Right arrows • Quiz: press Enter to unlock</div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Floating hearts
+    for (let i=0; i<30; i++){
+      const h = document.createElement("div");
+      h.className="heart";
+      h.textContent = (Math.random() < 0.15) ? "💖" : "❤️";
+      h.style.left = (Math.random()*100)+"vw";
+      h.style.fontSize = (14 + Math.random()*28)+"px";
+      h.style.animationDuration = (5 + Math.random()*6) + "s";
+      h.style.animationDelay = (Math.random()*3) + "s";
+      document.body.appendChild(h);
+    }
+
+    // Cute sparkles on clicks
+    function sparkleBurst(x,y){
+      for(let i=0;i<12;i++){
+        const s = document.createElement("div");
+        s.className = "sparkle pop";
+        s.style.left = x + "px";
+        s.style.top  = y + "px";
+        s.style.setProperty("--dx", (Math.random()*160 - 80) + "px");
+        s.style.setProperty("--dy", (Math.random()*160 - 80) + "px");
+        document.body.appendChild(s);
+        setTimeout(()=>s.remove(), 1000);
+      }
+    }
+    document.addEventListener("click",(e)=>sparkleBurst(e.clientX,e.clientY));
+
+    // Confetti hearts
+    function heartConfetti(count=22){
+      const emojis = ["💖","💕","💗","❤️","✨"];
+      for(let i=0;i<count;i++){
+        const c = document.createElement("div");
+        c.className = "confetti";
+        c.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        c.style.left = (Math.random()*100) + "vw";
+        c.style.animationDuration = (3.8 + Math.random()*2.6) + "s";
+        c.style.fontSize = (16 + Math.random()*14) + "px";
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(), 7000);
+      }
+    }
+
+    // Lock animations
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes lockFail{
+        0%{ transform: rotate(0deg) scale(1); }
+        20%{ transform: rotate(-12deg) scale(1.04); }
+        40%{ transform: rotate(12deg) scale(1.04); }
+        60%{ transform: rotate(-8deg) scale(1.03); }
+        80%{ transform: rotate(8deg) scale(1.03); }
+        100%{ transform: rotate(0deg) scale(1); }
+      }
+      @keyframes lockSuccess{
+        0%{ transform: scale(1); }
+        40%{ transform: scale(1.18); }
+        100%{ transform: scale(1); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Video slide numbers (slide 9 is PHOTO)
+    const videoSlides = new Set([6,7,10,12,15,17,18,20,21,24,27,29,31,38,39,40,42,53,54,59,60,61]);
+
+    // Text-only slides
+    const textSlides  = new Set([22,23,25,26,28,32,44,62,65,67]);
+
+    // Captions/text for numbered story slides 1..67
+    const data = {
+      1:{t:"ඔක්කොම පටන් ගත්තේ AIBS එකෙන්."},
+      2:{t:"මේ යාලුවො වගේ හිටපූ කාලෙ"},
+      3:{t:"හිහී 😏 මෙයා මගෙ ඔඩොක්කුවේ."},
+      4:{t:"මේ date එක මතකයිද හලෝ 🥹🤭"},
+      5:{t:"මේ අත අල්ලගත්තේ අතහරින්න නෙමෙයි."},
+      6:{t:"අනුක ගෙ ගෙදර. හම්මෙ කරන වැඩ අපි 😏"},
+      7:{t:"Vape කරන ලස්සන."},
+      8:{t:"මේ date එකනම් අම්තක වෙන්න විදියක් නෑ."},
+      9:{t:"මතකයිද සුදූ වැලි park එක. අපේ memories ගොඩක් තියෙනවා."},
+      10:{t:"මොකක්ද හලෝ ඒ ice cream කන විදිය 😏"},
+      11:{t:"මතකයිද සුදූ මන් අරන් දීපු මේ මුද්ද."},
+      12:{t:"හම්මෝ අපි දෙන්නා kiss කරන විදිය 🫣 .පරන උනාට දකිද්දිත් මොනාද වෙනවා."},
+      13:{t:"කෙල්ල මට අරන් දීපු watch එක 🥹"},
+      14:{t:"දහම් අයියගේ car photoshoot එක"},
+      15:{t:"මතකද මගෙ maths lessons. පාඩම් කලේ නම් නෑ හැබැයි 🤭"},
+      16:{t:"අපි දෙන්නගේ couple braclet එක."},
+      17:{t:"දෙවැනි බත පෙරේතී. හූ හූ.. 🫣"},
+      18:{t:"මතකද සුදූ film බලලා ඇවිල්ලා burger king එකෙන් කෑවා."},
+      19:{t:"Creperunner date එක මතකද සුදූ"},
+      20:{t:"Mechanic Rechal 😮‍💨😎"},
+      21:{t:"මගෙ මාලේ හොරකන් කරපු දවස 😒"},
+      22:{txt:"ඔහොම අපේ ආදරය පොඩ්ඩ පොඩ්ඩ build up වේගන ආවා."},
+      23:{txt:"ඊලග slide එක පොඩ්ඩක් naughty.\nඔයා ready ද.🫣"},
+      24:{t:"හයියෝ first time physically ගොඩක් ලන් වෙච්ච දවස 🥹"},
+      25:{txt:"ඊට පස්සේ අපේ ආදරයට පොඩි පොඩි ප්‍රශ්න එන්න ගත්තා. 😔🥺"},
+      26:{txt:"ඒත් අපි එතනින් නතර උනේ නෑ. දෙන්නට දෙන්න අතහරින්න කැමති උනේ නෑ.."},
+      27:{t:"ප්‍රශ්න වෙලා කාලයක් ගියාට පස්සෙ මන් ඔයාව හම්බ වෙන්න ආවා. Cafe ivy එකට. කාලෙකට පස්සේ හම්බ වෙච්ච නිසා මට ගොඩක් ආදරේ හිතුනා එදා.🥺🥺"},
+      28:{txt:"හැම දේකටම highs and lows තියෙනවා. මම abroad යන්න කාලෙත් පොඩ්ඩ පොඩ්ඩ ලන් උනා."},
+      29:{t:"මන් රට යන්න කලින් හම්බ උන වෙලාවක්. කෙල්ල හොදටම ඇඩුවා එදා..🥺🫂"},
+      30:{t:"ඒ දවස"},
+      31:{t:"ගොඩක් දුකෙන් මන් මේ ජනේලෙන් එලිය බලන් ඉන්නෙ."},
+      32:{txt:"මොනා කරන්නද සුදූ හැම දෙයක්ම හොදකටලු නෙ වෙන්න. මේක අපි දෙන්නගෙ life එකේ අලුත් chapter එකක්."},
+      33:{t:"ඔන්න long distance පටන් ගත්තා. බලන්නකො කෙල්ලගෙ හිනාව."},
+      34:{t:"මගෙ චන්ඩි රැජින"},
+      35:{t:"මෙන්න හොදටම නිදි මෙයා"},
+      36:{t:"නපුරු ආච්චි. හැබැයි ලස්ස්නයි අනේ තරහා ගියාම."},
+      37:{t:"මට එවන photos 🫣 sexy red"},
+      38:{t:"යක්ශ පැටියා මගේ. Look at those facial expressions."},
+      39:{t:"Long distance isnt easy. අතින්වත් අල්ලන බෑ කියලා දැනුනම 😔"},
+      40:{t:"කෙල්ල මට suprise දෙන්න අමතක කලේ නෑ. මට හම්බ උන හොදම birthday surprise එක."},
+      41:{t:"My wallpaper"},
+      42:{t:"ඔයා මට එවපු valentine gifts 🫣"},
+      43:{t:"මතකද anniversary date එක 🫣🫂"},
+      44:{txt:"ඔහොම ඔහොම කාලයක් ගියා. කොල්ලා දැන් චුට්ටක් settle වෙලා. ආයි කෙල්ලව බලන්න එන්න කාලෙ හරි වගේ."},
+      45:{t:"ඔන්න එහෙන්ම්. මෙක දාපු වෙලේ ඉදන් පුදුම සතුටකින් හිටියෙ සුදූ."},
+      46:{t:"ඔන්න මගෙ මැනිකව බලන්න එන්නයි යන්නේ.🫣😚"},
+      47:{t:"Look who is here to welcome.🫣😘"},
+      48:{t:"Finally met. බදාගෙන ඉම්බා මන් එදා ඔයාව.😘"},
+      49:{t:"Happiest days of my life started"},
+      50:{t:"හම්බේ දෙන්නගෙ සතුට."},
+      51:{t:"Traveling තමයි හැමදාම."},
+      52:{t:"Aww 🫣 my baby happy."},
+      53:{t:"Madam කනව කනවා ඉවරයක් නෑ"},
+      54:{t:"හියෝ මෙ මොකෝ මේ. Naughty වැඩ කරල මහන්සී දෙන්නට."},
+      55:{t:"කෙල්ල මට ඇදුම් අරන් දුන්නා."},
+      56:{t:"හම්මෙ මෙක නම් පට්ට රසයි 😮‍💨"},
+      57:{t:"Marina beach date එකනම් අමතක වෙන්නෙ නෑ. 🥹"},
+      58:{t:"Mage birthday ekata කෙල්ල දීපු surprise එක🥺"},
+      59:{t:"කෙල්ල gaming"},
+      60:{t:"ඔයාගෙ අතින් හදන කෑම මාරම රසයි සුදූ🥹"},
+      61:{t:"හිමින් බොන්න ලමයෝ"},
+      62:{txt:"ඒ සති තුනත් පුදුම ඉක්ම්නට ගෙවුනේ සුදූ🥺. Atleast i came to see you. 🫂"},
+      63:{t:"ආයි ගොඩක් දුරට යන්න ලෑස්තී."},
+      64:{t:"යන්න කලින් අම්මලා එක්ක"},
+      65:{txt:"අපේ අම්මත් ගොඩක් ඇඩුවා එදා. ඔයත් අඩ්නවා හොදටම😞😞."},
+      66:{t:"Back to long distance අඩන්න එපා රත්තරන්. අපි අයෙත් හම්බ වෙනවා. මේ වගෙ වෙන් වෙන්න නෙමෙයි. සදහටම ඉන්න."},
+      67:{txt:"ඔන්න ඔහොමයි අපේ කතාව දැනට ගෙවුනේ. තව ගොඩක් දුර යන්න තියෙනවා.🥹මන් හිතනවා මේ හිටියා වගේම හැමදාටම මාත් එක්ක ඔයා ඉදී කියලා.🫂❤️.\n\nඉතින් මේ valentines day එක තව එක පොඩි දිනයක් විතරයි. මන් ඔයාට හැමදාටම ආදරෙයි❤️."}
+    };
+
+    // Build base slides
+    const slides = [];
+    for (let i=1; i<=67; i++){
+      if (textSlides.has(i)){
+        slides.push({key:`text-${i}`, type:"text", text: data[i].txt});
+      } else if (videoSlides.has(i)){
+        slides.push({key:`video-${i}`, type:"video", file:`video${i}.mp4`, caption: data[i].t, videoKey:`video-${i}`});
+      } else {
+        slides.push({key:`photo-${i}`, type:"image", file:`photo${i}.jpg`, caption: data[i].t});
+      }
+    }
+
+    function insertAfterOriginalNumber(num, newSlide){
+      const idx = slides.findIndex(s => s.key === `photo-${num}` || s.key === `video-${num}` || s.key === `text-${num}`);
+      if (idx !== -1) slides.splice(idx + 1, 0, newSlide);
+    }
+
+    // Extra inserts
+    insertAfterOriginalNumber(13, {
+      key:"extra-rain-after13",
+      type:"video",
+      file:"extra_rain_after13.mp4",
+      caption:"ඒ වැස්ස නම් කවදාවත්ම අමතක වෙන්නේ නෑ🥹",
+      videoKey:"extra-rain-after13"
+    });
+
+    insertAfterOriginalNumber(17, {
+      key:"extra-beach-before18",
+      type:"image",
+      file:"extra_beach_before18.jpg",
+      caption:"මතකද සුදූ beach date එක. First date after getting into a serious relationship🫣"
+    });
+
+    insertAfterOriginalNumber(39, {
+      key:"extra-edit-after39",
+      type:"image",
+      file:"extra_edit_after39.jpg",
+      caption:"ඔයා edit කරපු photo එකක්. කොච්චර ලස්සන couple එකක්ද 😍"
+    });
+
+    insertAfterOriginalNumber(53, {
+      key:"extra-finaldest-after53",
+      type:"image",
+      file:"extra_final_destination_after53.jpg",
+      caption:"මතකයිද තුරුලු වෙලා final destination බැලුවා. But your heart is my final destination 🫣"
+    });
+
+    // Quiz gate after slide 32
+    insertAfterOriginalNumber(32, { key:"unlock-quiz-after32", type:"quiz" });
+
+    const book = document.getElementById("book");
+    const progressEl = document.getElementById("progress");
+
+    // Build pages
+    const pageEls = [];
+    slides.forEach((s, idx) => {
+      const page = document.createElement("div");
+      page.className = "page";
+      page.dataset.index = idx;
+
+      if (s.type === "image") {
+        const img = document.createElement("img");
+        img.className = "media";
+        img.src = s.file;
+        img.alt = "";
+        page.appendChild(img);
+
+        const cap = document.createElement("div");
+        cap.className = "caption";
+        cap.textContent = s.caption;
+        page.appendChild(cap);
+      }
+
+      if (s.type === "video") {
+        const vid = document.createElement("video");
+        vid.className = "media story-video";
+        vid.dataset.vkey = s.videoKey;
+        vid.autoplay = true;
+        vid.muted = true;
+        vid.loop = true;
+        vid.playsInline = true;
+        vid.controls = true;
+
+        const src = document.createElement("source");
+        src.src = s.file;
+        src.type = "video/mp4";
+        vid.appendChild(src);
+        page.appendChild(vid);
+
+        const cap = document.createElement("div");
+        cap.className = "caption";
+        cap.textContent = s.caption;
+        page.appendChild(cap);
+      }
+
+      if (s.type === "text") {
+        const box = document.createElement("div");
+        box.className = "text-slide";
+        const t = document.createElement("div");
+        t.className = "big";
+        t.textContent = s.text;
+        box.appendChild(t);
+        page.appendChild(box);
+      }
+
+      if (s.type === "quiz") {
+        const q = document.createElement("div");
+        q.className = "quiz";
+        q.innerHTML = `
+          <div class="quiz-inner">
+            <div class="lockRow"><div class="lockIcon" id="lockIcon">🔒</div></div>
+            <h2>Unlock the rest… 🔐❤️</h2>
+            <p>මතකයිද බලමු කෙල්ලට😏 Answer these 3 questions to continue </p>
+
+            <div class="q">
+              <label>1) What was the year when we first met?</label>
+              <input id="q1" placeholder="Type your answer...">
+            </div>
+
+            <div class="q">
+              <label>2) What was the name of the cafe, that I took you first to have pizza?</label>
+              <input id="q2" placeholder="Type your answer...">
+            </div>
+
+            <div class="q">
+              <label>3) What is the first movie we watched on theater?</label>
+              <input id="q3" placeholder="Type your answer...">
+            </div>
+
+            <div class="quiz-actions">
+              <button type="button" id="btnUnlock">Unlock ✅</button>
+              <button type="button" id="btnClear">Clear</button>
+            </div>
+
+            <div class="result" id="quizResult"></div>
+            <div class="hint">Tip: case doesn’t matter. Press Enter to check.</div>
+          </div>
+        `;
+        page.appendChild(q);
+      }
+
+      book.appendChild(page);
+      pageEls.push(page);
+    });
+
+    // State
+    let currentIndex = 0;
+    let unlockedAfterQuiz = false;
+
+    const music = document.getElementById("bgMusic");
+    music.volume = 0.4;
+
+    // Video controls
+    function pauseAllVideos(){
+      document.querySelectorAll("video.story-video").forEach(v=>{
+        v.pause();
+        try{ v.currentTime = 0; }catch(e){}
+      });
+    }
+    function playActiveVideoIfAny(){
+      pauseAllVideos();
+      const activeSlide = slides[currentIndex];
+      if (!activeSlide || activeSlide.type !== "video") return;
+      const v = document.querySelector(`video.story-video[data-vkey="${activeSlide.videoKey}"]`);
+      if (!v) return;
+      v.muted = true;
+      v.play().catch(()=>{});
+    }
+
+    // Page navigation
+    function updateProgress(){
+      progressEl.textContent = `Page ${currentIndex + 1} / ${slides.length}`;
+    }
+    function showIndex(newIndex, direction){
+      if (newIndex < 0 || newIndex >= slides.length) return;
+
+      const oldPage = pageEls[currentIndex];
+      const newPage = pageEls[newIndex];
+
+      if (oldPage){
+        oldPage.classList.remove("active");
+        oldPage.classList.remove("exit-left","exit-right");
+        if (direction === "next") oldPage.classList.add("exit-left");
+        if (direction === "prev") oldPage.classList.add("exit-right");
+      }
+
+      newPage.classList.remove("exit-left","exit-right");
+      newPage.classList.add("active");
+
+      currentIndex = newIndex;
+      updateProgress();
+      playActiveVideoIfAny();
+
+      wireQuizButtons();
+    }
+    function nextPage(){
+      const next = currentIndex + 1;
+      if (next >= slides.length) return;
+
+      if (slides[currentIndex].type === "quiz" && !unlockedAfterQuiz){
+        const r = document.getElementById("quizResult");
+        if (r){
+          r.className = "result bad";
+          r.textContent = "Hehe 😏 Answer all 3 correctly to unlock ❤️";
+        }
+        wiggleLock(false);
+        return;
+      }
+      showIndex(next, "next");
+    }
+    function prevPage(){ showIndex(currentIndex - 1, "prev"); }
+
+    // Music
+    function startMusic(){ music.play().catch(()=>{}); }
+    function toggleMusic(){ if (music.paused) startMusic(); else music.pause(); }
+
+    // Quiz
+    function norm(s){ return (s || "").trim().toLowerCase(); }
+    function setInputState(el, ok){
+      if (!el) return;
+      el.classList.remove("shake");
+      if (!ok){
+        el.classList.add("shake");
+        setTimeout(()=>el.classList.remove("shake"), 550);
+      }
+    }
+    function wiggleLock(ok){
+      const lock = document.getElementById("lockIcon");
+      if (!lock) return;
+      lock.textContent = ok ? "🔓" : "🔒";
+      lock.style.animation = "none";
+      void lock.offsetWidth;
+      lock.style.animation = ok ? "lockSuccess 700ms ease" : "lockFail 600ms ease";
+    }
+    function checkQuiz(){
+      const q1 = document.getElementById("q1");
+      const q2 = document.getElementById("q2");
+      const q3 = document.getElementById("q3");
+
+      const ok1 = norm(q1?.value) === "2023";
+      const ok2 = norm(q2?.value) === "lounge 171";
+      const ok3 = norm(q3?.value) === "ponniyin selvan";
+
+      setInputState(q1, ok1);
+      setInputState(q2, ok2);
+      setInputState(q3, ok3);
+
+      const r = document.getElementById("quizResult");
+      if (ok1 && ok2 && ok3){
+        unlockedAfterQuiz = true;
+        if (r){
+          r.className = "result ok";
+          r.textContent = "Shaaaaa! ❤️ Good girl 😚 Now press Next ➜";
+        }
+        wiggleLock(true);
+        heartConfetti(28);
+      } else {
+        unlockedAfterQuiz = false;
+        if (r){
+          r.className = "result bad";
+          let msg = "Aneeeee 🥺 ";
+          if (!ok1) msg += "Q1 ";
+          if (!ok2) msg += "Q2 ";
+          if (!ok3) msg += "Q3 ";
+          msg += "wrong!";
+          r.textContent = msg;
+        }
+        wiggleLock(false);
+      }
+    }
+    function clearQuiz(){
+      ["q1","q2","q3"].forEach(id=>{
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+        if (el) el.classList.remove("shake");
+      });
+      const r = document.getElementById("quizResult");
+      if (r){ r.className = "result"; r.textContent = ""; }
+      unlockedAfterQuiz = false;
+      const lock = document.getElementById("lockIcon");
+      if (lock) lock.textContent = "🔒";
+    }
+    function wireQuizButtons(){
+      const unlockBtn = document.getElementById("btnUnlock");
+      const clearBtn  = document.getElementById("btnClear");
+      if (unlockBtn && !unlockBtn.dataset.wired){
+        unlockBtn.dataset.wired = "1";
+        unlockBtn.addEventListener("click", checkQuiz);
+      }
+      if (clearBtn && !clearBtn.dataset.wired){
+        clearBtn.dataset.wired = "1";
+        clearBtn.addEventListener("click", clearQuiz);
+      }
+    }
+
+    // Valentine flow
+    function goYes(){
+      document.getElementById("valentine").classList.add("hidden");
+      document.getElementById("surprise").classList.remove("hidden");
+      startMusic();
+      heartConfetti(14);
+    }
+    function goNo(){
+      document.getElementById("valentine").classList.add("hidden");
+      document.getElementById("noBox").classList.remove("hidden");
+    }
+    function goPlease(){
+      document.getElementById("noBox").classList.add("hidden");
+      document.getElementById("surprise").classList.remove("hidden");
+      startMusic();
+      heartConfetti(10);
+    }
+    function goOpenBook(){
+      document.getElementById("surprise").classList.add("hidden");
+      document.getElementById("bookSection").classList.remove("hidden");
+      showIndex(0, "next");
+      heartConfetti(18);
+    }
+
+    // Bind buttons reliably
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("btnYes")?.addEventListener("click", goYes);
+      document.getElementById("btnNo")?.addEventListener("click", goNo);
+      document.getElementById("btnPlease")?.addEventListener("click", goPlease);
+      document.getElementById("btnOpenBook")?.addEventListener("click", goOpenBook);
+
+      document.getElementById("btnPrev")?.addEventListener("click", prevPage);
+      document.getElementById("btnNext")?.addEventListener("click", nextPage);
+
+      document.getElementById("musicBtn")?.addEventListener("click", toggleMusic);
+
+      updateProgress();
+      wireQuizButtons();
+    });
+
+    // Keyboard navigation
+    window.addEventListener("keydown", (e)=>{
+      if (document.getElementById("bookSection").classList.contains("hidden")) return;
+      if (e.key === "ArrowRight") nextPage();
+      if (e.key === "ArrowLeft") prevPage();
+      if (e.key === "Enter" && slides[currentIndex]?.type === "quiz") checkQuiz();
+    });
+  </script>
+
+  <!-- FILES:
+    love.mp3
+
+    VIDEOS (numbered): video6.mp4 video7.mp4 video10.mp4 video12.mp4 video15.mp4 video17.mp4 video18.mp4
+                      video20.mp4 video21.mp4 video24.mp4 video27.mp4 video29.mp4 video31.mp4
+                      video38.mp4 video39.mp4 video40.mp4 video42.mp4
+                      video53.mp4 video54.mp4 video59.mp4 video60.mp4 video61.mp4
+
+    PHOTOS (numbered): photo{n}.jpg for all other non-text, non-video slides (including slide 9 as photo9.jpg)
+
+    TEXT slides (no file): 22,23,25,26,28,32,44,62,65,67
+
+    EXTRA (non-numbered):
+      extra_beach_before18.jpg
+      extra_rain_after13.mp4
+      extra_edit_after39.jpg
+      extra_final_destination_after53.jpg
+  -->
+</body>
+</html>
